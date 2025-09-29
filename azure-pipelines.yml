@@ -23,7 +23,7 @@ steps:
     pytest --cov=. --cov-report=xml
   displayName: 'Run tests and generate coverage report'
 
-- task: SonarQubePrepare@5
+- task: SonarQubePrepare@7
   inputs:
     SonarQube: 'sq20251' # Replace with your service connection name
     scannerMode: 'CLI'
@@ -34,9 +34,9 @@ steps:
     extraProperties: |
       sonar.python.coverage.reportPaths=coverage.xml
 
-- task: SonarQubeAnalyze@5
+- task: SonarQubeAnalyze@7
   displayName: 'Run SonarQube Analysis'
 
-- task: SonarQubePublish@5
+- task: SonarQubePublish@7
   inputs:
     pollingTimeoutSec: '300'
