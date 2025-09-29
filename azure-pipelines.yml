@@ -28,8 +28,8 @@ steps:
     SonarQube: 'sq20251' # Replace with your service connection name
     scannerMode: 'CLI'
     configMode: 'manual'
-    cliProjectKey: '$(Build.Repository.Name)'
-    cliProjectName: '$(Build.Repository.Name)'
+    cliProjectKey: 'pytest-github-actions-example'
+    cliProjectName: 'pytest-github-actions-example'
     cliSources: '.'
     extraProperties: |
       sonar.python.coverage.reportPaths=coverage.xml
