@@ -1,17 +1,11 @@
-# Python package
-# Create and test a Python package on multiple Python versions.
-# Add steps that analyze code, save the dist with the build record, publish to a PyPI-compatible index, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/python
-
 trigger:
 - master
 
 pool:
   vmImage: ubuntu-latest
 
-strategy:
-    Python311:
-      python.version: '3.11'
+variables:
+  python.version: '3.11'
 
 steps:
 - task: UsePythonVersion@0
@@ -22,9 +16,27 @@ steps:
 - script: |
     python -m pip install --upgrade pip
     pip install -r requirements.txt
-  displayName: 'Install dependencies'
+    pip install pytest pytest-cov pytest-azurepipelines
+  displayName: 'Install dependencies and coverage tools'
 
 - script: |
-    pip install pytest pytest-azurepipelines
-    pytest
-  displayName: 'pytest'
+    pytest --cov=. --cov-report=xml
+  displayName: 'Run tests and generate coverage report'
+
+- task: SonarQubePrepare@5
+  inputs:
+    SonarQube: 'SonarQubeServiceConnection' # Replace with your service connection name
+    scannerMode: 'CLI'
+    configMode: 'manual'
+    cliProjectKey: '$(Build.Repository.Name)'
+    cliProjectName: '$(Build.Repository.Name)'
+    cliSources: '.'
+    extraProperties: |
+      sonar.python.coverage.reportPaths=coverage.xml
+
+- task: SonarQubeAnalyze@5
+  displayName: 'Run SonarQube Analysis'
+
+- task: SonarQubePublish@5
+  inputs:
+    pollingTimeoutSec: '300'
